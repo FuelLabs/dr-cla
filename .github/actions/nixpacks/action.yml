@@ -1,0 +1,78 @@
+name: 'Build Containers with Nixpacks and'
+description: 'Build a docker container with nixpacks on GitHub CI and push to a registry'
+author: 'Michael Bianco'
+branding:
+  icon: 'box'
+  color: 'green'
+
+inputs:
+  tags:
+    description: "List of tags to apply to the built image"
+    required: false
+  labels:
+    description: "List of metadata for an image"
+    required: false
+  platforms:
+    description: "List of target platforms for the build"
+    required: false
+  context:
+    description: "Build's context is the set of files located in the specified PATH"
+    required: true
+    default: "."
+  pkgs:
+    description: "Provide additional nix packages to install in the environment"
+    required: false
+  apt:
+    description: "Provide additional apt packages to install in the environment"
+    required: false
+  env:
+    description: "Provide additional environment variables to set"
+    required: false
+  push:
+    description: "Boolean to determine if the built image should be pushed"
+    required: false
+    default: 'false'
+  cache:
+    description: "Boolean to determine if the build should use the cache"
+    required: false
+    default: 'false'
+  cache_tag:
+    description: "Image to use for the cache image. Defaults to `ghcr.io/org/app:latest` where org/app is the repository the workflow runs into. (NOTE: Provide a lowercase name, even if the repo or tbe org contain uppercase characters)"
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    # TODO can we remove this?
+    - name: Set GitHub Path
+      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    # TODO should detect if qemu is needed based on current vs target platform
+    - uses: docker/setup-qemu-action@v3
+      if: inputs.platforms != ''
+
+    - run: entrypoint.sh
+      shell: bash
+      env:
+        INPUT_TAGS: ${{ inputs.tags }}
+        INPUT_LABELS: ${{ inputs.labels }}
+        INPUT_PLATFORMS: ${{ inputs.platforms }}
+        INPUT_CONTEXT: ${{ inputs.context }}
+        INPUT_PKGS: ${{ inputs.pkgs }}
+        INPUT_APT: ${{ inputs.apt }}
+        INPUT_PUSH: ${{ inputs.push }}
+        INPUT_ENV: ${{ inputs.env }}
+        INPUT_CACHE: ${{ inputs.cache }}
+        INPUT_CACHE_TAG: ${{ inputs.cache_tag }}
+
+        # raw SHA of the commit which triggered the workflow
+        GIT_SHA: ${{ github.sha }}
+        # username/repo
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        # github.com/username/repo
+        GITHUB_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}
+        # for author extraction
+        GH_TOKEN: ${{ github.token }}
