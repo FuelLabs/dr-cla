@@ -40,6 +40,7 @@ jobs:
           push: true
           cache: true
           platforms: "linux/amd64,linux/arm64"
+          cache_tag: ${{ env.IMAGE_NAME }}:cache
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.DATE_STAMP }}
             ${{ env.IMAGE_NAME }}:latest
