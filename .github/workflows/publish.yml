@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  IMAGE_NAME: ghcr.io/fuellabs/dr-cla
 
 jobs:
   build:
@@ -29,9 +29,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # create a unique tag for each build
+      - name: Set Docker tag
+        id: date
+        run: echo "DATE_STAMP=$(date +%s)" > "$GITHUB_ENV"
+
       - name: Build and push Docker images
         uses: iloveitaly/github-action-nixpacks@main
         with:
           push: true
           cache: true
           platforms: "linux/amd64,linux/arm64"
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.DATE_STAMP }}
+            ${{ env.IMAGE_NAME }}:latest
