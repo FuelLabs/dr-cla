@@ -2,6 +2,8 @@ version: 1.0
 runtime: corretto8
 build:
   commands:
+    pre-build:
+      - yum -y install unzip
     build:
       - ./sbt dist
       - unzip target/universal/dr-cla-0.1.0-SNAPSHOT.zip
