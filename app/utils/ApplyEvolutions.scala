@@ -7,14 +7,4 @@
 
 package utils
 
-import org.flywaydb.play.PlayInitializer
-import play.api.inject.guice.GuiceApplicationBuilder
-
-object ApplyEvolutions extends App {
-  val app = new GuiceApplicationBuilder().build()
-
-  val playInitializer = app.injector.instanceOf[PlayInitializer]
-  playInitializer.onStart()
-
-  app.stop()
-}
+// No-op: Database evolutions are not needed for DynamoDB

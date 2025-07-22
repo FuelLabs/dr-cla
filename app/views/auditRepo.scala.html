@@ -12,8 +12,8 @@
 
 @(externalContributors: Set[(GitHub.ContributorWithMetrics, Option[ClaSignature])], internalContributors: Set[GitHub.ContributorWithMetrics])
 
-@dateFormat(dateTime: LocalDateTime) = @{
-    dateTime.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"))
+@dateFormat(dateTime: String) = @{
+    LocalDateTime.parse(dateTime).format(DateTimeFormatter.ofPattern("MMM dd, yyyy"))
 }
 
 @if(internalContributors.nonEmpty) {

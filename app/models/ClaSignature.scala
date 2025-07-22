@@ -7,7 +7,5 @@
 
 package models
 
-import java.time.LocalDateTime
-
-case class ClaSignature(id: Int, contactGitHubId: String, signedOn: LocalDateTime, claVersion: String)
+case class ClaSignature(id: String, contactGitHubId: String, signedOn: String, claVersion: String)
 

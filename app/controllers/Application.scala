@@ -97,7 +97,7 @@ class Application @Inject()
         Ok(claSignView(authUrl, maybeGitHubAuthInfo, latestClaVersion, viewHelper.claText, maybePrUrl, svgInline))
       } recover {
         case AlreadyExistsException(claSignature) =>
-          BadRequest(claAlreadySignedView(claSignature.signedOn))
+          BadRequest(claAlreadySignedView(java.time.LocalDateTime.ofInstant(java.time.Instant.parse(claSignature.signedOn), java.time.ZoneOffset.UTC)))
       }
     }
   }
@@ -121,11 +121,11 @@ class Application @Inject()
 
             maybeContact <- db.findContactByGitHubId(user.username)
             contact <- maybeContact.fold {
-              db.createContact(Contact(-1, maybeFirstName, lastName, email, user.username))
+              db.createContact(Contact("-1", maybeFirstName, lastName, email, user.username))
             } (Future.successful)
             existingClaSignatures <- db.findClaSignaturesByGitHubIds(Set(user))
             claSignature <- existingClaSignatures.headOption.fold {
-              Future.successful(ClaSignature(-1, contact.gitHubId, LocalDateTime.now(), claVersion))
+              Future.successful(ClaSignature("-1", contact.gitHubId, java.time.Instant.now().toString, claVersion))
             } { existingClaSignature =>
               Future.failed(AlreadyExistsException(existingClaSignature))
             }
@@ -159,7 +159,7 @@ class Application @Inject()
       } yield Redirect(routes.Application.signedCla(maybePrUrl))
     } recover {
       case AlreadyExistsException(claSignature) =>
-        BadRequest(claAlreadySignedView(claSignature.signedOn))
+        BadRequest(claAlreadySignedView(java.time.LocalDateTime.ofInstant(java.time.Instant.parse(claSignature.signedOn), java.time.ZoneOffset.UTC)))
       case e: Throwable =>
         Logger.error("CLA could not be signed.", e)
         val baseErrorMessage = "Could not sign the CLA"
@@ -319,7 +319,11 @@ class Application @Inject()
       val externalContributorsWithClas = external.map { contributorWithMetrics =>
         contributorWithMetrics.contributor match {
           case gitHubUser: GitHub.User =>
-            contributorWithMetrics -> clasForExternalContributors.find(_.contactGitHubId == gitHubUser.username)
+            val maybeCla = clasForExternalContributors.find(_.contactGitHubId == gitHubUser.username)
+            val maybeClaWithDate = maybeCla.map { claSignature =>
+              claSignature.copy(signedOn = java.time.LocalDateTime.ofInstant(java.time.Instant.parse(claSignature.signedOn), java.time.ZoneOffset.UTC).toString)
+            }
+            contributorWithMetrics -> maybeClaWithDate
           case _ =>
             contributorWithMetrics -> None
         }

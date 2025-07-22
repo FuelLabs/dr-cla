@@ -9,7 +9,7 @@ package models
 
 
 // note: gitHubId is nullable in the DB but we only ever query for contacts with githubids, so we make it non-nullable here
-case class Contact(id: Int, firstName: Option[String], lastName: String, email: String, gitHubId: String)
+case class Contact(id: String, firstName: Option[String], lastName: String, email: String, gitHubId: String)
 
 object Contact {
 

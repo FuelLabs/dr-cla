@@ -24,10 +24,7 @@ libraryDependencies ++= Seq(
 
   "com.pauldijou"          %% "jwt-play-json"                      % "0.19.0",
 
-  "org.postgresql"         %  "postgresql"                         % "42.1.4",
-  "org.flywaydb"           %% "flyway-play"                        % "4.0.0",
-
-  "io.getquill"            %% "quill-async-postgres"               % "2.5.4",
+  "software.amazon.awssdk" % "dynamodb"                           % "2.20.145",
 
   "org.webjars"            %% "webjars-play"                       % "2.6.3",
   "org.webjars"            %  "salesforce-lightning-design-system" % "2.4.1",

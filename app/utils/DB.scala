@@ -10,61 +10,77 @@ package utils
 import javax.inject.Inject
 import models.{ClaSignature, Contact}
 import modules.Database
-
+import software.amazon.awssdk.services.dynamodb.model._
+import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Configuration
 
-class DB @Inject()(database: Database)(implicit ec: ExecutionContext) {
 
-  import database.ctx._
+class DB @Inject()(database: Database, config: Configuration)(implicit ec: ExecutionContext) {
+  private val dynamoDb = database.dynamoDb
+  private val tableName = config.get[String]("aws.dynamodb.table")
 
-  private val contacts = quote {
-    querySchema[Contact](
-      "salesforce.contact",
-      _.gitHubId -> "sf_cla__github_id__c",
-      _.firstName -> "firstname",
-      _.lastName -> "lastname"
-    )
+  def findContactByGitHubId(gitHubId: String): Future[Option[Contact]] = Future {
+    val request = GetItemRequest.builder()
+      .tableName(tableName)
+      .key(Map("PK" -> AttributeValue.builder().s(s"CONTACT#$gitHubId").build()).asJava)
+      .build()
+    val result = dynamoDb.getItem(request)
+    if (result.hasItem) {
+      val item = result.item().asScala
+      Some(Contact(
+        id = item.getOrElse("id", AttributeValue.builder().s("").build()).s(),
+        firstName = Some(item.getOrElse("firstName", AttributeValue.builder().s("").build()).s()),
+        lastName = item.getOrElse("lastName", AttributeValue.builder().s("").build()).s(),
+        email = item.getOrElse("email", AttributeValue.builder().s("").build()).s(),
+        gitHubId = gitHubId
+      ))
+    } else None
   }
 
-  private val claSignatures = quote {
-    querySchema[ClaSignature](
-      "salesforce.sf_cla__cla_signature__c",
-      _.signedOn -> "sf_cla__signed_on__c",
-      _.claVersion -> "sf_cla__cla_version__c",
-      _.contactGitHubId -> "sf_cla__contact__r__sf_cla__github_id__c"
-    )
+  def createContact(contact: Contact): Future[Contact] = Future {
+    val item = Map(
+      "PK" -> AttributeValue.builder().s(s"CONTACT#${contact.gitHubId}").build(),
+      "id" -> AttributeValue.builder().s(contact.id).build(),
+      "firstName" -> AttributeValue.builder().s(contact.firstName.getOrElse("")).build(),
+      "lastName" -> AttributeValue.builder().s(contact.lastName).build(),
+      "email" -> AttributeValue.builder().s(contact.email).build()
+    ).asJava
+    val request = PutItemRequest.builder().tableName(tableName).item(item).build()
+    dynamoDb.putItem(request)
+    contact
   }
 
-  def findContactByGitHubId(gitHubId: String): Future[Option[Contact]] = {
-    val queryResult = run {
-      contacts.filter(_.gitHubId == lift(gitHubId))
-    }
-
-    queryResult.map(_.headOption)
+  def createClaSignature(claSignature: ClaSignature): Future[ClaSignature] = Future {
+    val item = Map(
+      "PK" -> AttributeValue.builder().s(s"CLASIGNATURE#${claSignature.contactGitHubId}").build(),
+      "id" -> AttributeValue.builder().s(claSignature.id).build(),
+      "signedOn" -> AttributeValue.builder().s(claSignature.signedOn).build(),
+      "claVersion" -> AttributeValue.builder().s(claSignature.claVersion).build(),
+      "contactGitHubId" -> AttributeValue.builder().s(claSignature.contactGitHubId).build()
+    ).asJava
+    val request = PutItemRequest.builder().tableName(tableName).item(item).build()
+    dynamoDb.putItem(request)
+    claSignature
   }
 
-  def createContact(contact: Contact): Future[Contact] = {
-    val queryResult = run {
-      contacts.insert(lift(contact)).returning(_.id)
-    }
-
-    queryResult.map(newId => contact.copy(id = newId))
-  }
-
-  def createClaSignature(claSignature: ClaSignature): Future[ClaSignature] = {
-    val queryResult = run {
-      claSignatures.insert(lift(claSignature)).returning(_.id)
-    }
-
-    queryResult.map(newId => claSignature.copy(id = newId))
-  }
-
-  def findClaSignaturesByGitHubIds(gitHubIds: Set[GitHub.User]): Future[Set[ClaSignature]] = {
-    val queryResult = run {
-      claSignatures.filter(claSignature => liftQuery(gitHubIds.map(_.username)).contains(claSignature.contactGitHubId))
-    }
-
-    queryResult.map(_.toSet)
+  def findClaSignaturesByGitHubIds(gitHubIds: Set[GitHub.User]): Future[Set[ClaSignature]] = Future {
+    gitHubIds.map { user =>
+      val request = GetItemRequest.builder()
+        .tableName(tableName)
+        .key(Map("PK" -> AttributeValue.builder().s(s"CLASIGNATURE#${user.username}").build()).asJava)
+        .build()
+      val result = dynamoDb.getItem(request)
+      if (result.hasItem) {
+        val item = result.item().asScala
+        Some(ClaSignature(
+          id = item.getOrElse("id", AttributeValue.builder().s("").build()).s(),
+          signedOn = item.getOrElse("signedOn", AttributeValue.builder().s("").build()).s(),
+          claVersion = item.getOrElse("claVersion", AttributeValue.builder().s("").build()).s(),
+          contactGitHubId = item.getOrElse("contactGitHubId", AttributeValue.builder().s("").build()).s()
+        ))
+      } else None
+    }.flatten.toSet
   }
 
 }
