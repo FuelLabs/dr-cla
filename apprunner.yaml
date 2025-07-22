@@ -1,0 +1,44 @@
+version: 1.0
+runtime: corretto11 
+build:
+  commands:
+    build:
+      - ./sbt stage
+run: 
+  command: ./target/universal/stage/bin/dr-cla -Dhttp.port=8000
+  network:
+    port: 8000
+  env:
+    - name: GITHUB_BOT_NAME
+      value: "fuellabs-cla"
+    - name: GITHUB_CLIENT_ID
+      value: "Iv23li0z5eADUdlXzXth"
+    - name: GITHUB_INTEGRATION_CLIENT_ID
+      value: "Iv23li0z5eADUdlXzXth"
+    - name: GITHUB_INTEGRATION_ID
+      value: "1077127"
+    - name: GITHUB_INTEGRATION_SLUG
+      value: "fuel-cla-bot"
+    - name: ORG_DOMAIN
+      value: "fuel.sh"
+    - name: ORG_EMAIL
+      value: "info@fuel.sh"
+    - name: ORG_LOGO
+      value: "https://ok14static.oktacdn.com/fs/bco/1/fs0jb2sbh8GfniEK3697"
+    - name: ORG_NAME
+      value: "Fuel Labs"
+    - name: ORG_URL
+      value: "https://fuel.network"
+    - name: WEBJARS_USE_CDN
+      value: "true"
+  secrets:
+    - name: APPLICATION_SECRET
+      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+    - name: GITHUB_CLIENT_SECRET
+      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+    - name: GITHUB_INTEGRATION_CLIENT_SECRET
+      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+    - name: GITHUB_INTEGRATION_PRIVATE_KEY
+      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+    - name: GITHUB_INTEGRATION_SECRET_TOKEN
+      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
