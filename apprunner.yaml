@@ -6,9 +6,9 @@ build:
       - ./sbt stage
       - yum -y install unzip
       - ./sbt dist
-      - unzip target/universal/dr-cla-0.1.0-SNAPSHOT.zip
+      - unzip -o target/universal/dr-cla-0.1.0-SNAPSHOT.zip -d output
 run: 
-  command: cd dr-cla-0.1.0-SNAPSHOT && ./bin/dr-cla -Dhttp.port=8000
+  command: cd output/dr-cla-0.1.0-SNAPSHOT && ./bin/dr-cla -Dhttp.port=8000
   network:
     port: 8000
   env:
