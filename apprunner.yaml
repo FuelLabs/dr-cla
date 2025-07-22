@@ -31,6 +31,8 @@ run:
       value: "https://fuel.network"
     - name: WEBJARS_USE_CDN
       value: "true"
+    - name: DYNAMODB_TABLE
+      value: "fuel-dr-cla-prod"
   secrets:
     - name: APPLICATION_SECRET
       value-from: "arn:aws:secretsmanager:us-east-1:767828747130:secret:prod/fuel-dr-cla-secrets-If1zeV:application_secret::"
