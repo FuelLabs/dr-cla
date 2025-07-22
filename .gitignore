@@ -1,6 +1,7 @@
 logs
 project/project
 project/target
+project/.bloop
 target
 tmp
 .history
@@ -16,3 +17,4 @@ dist
 .DS_Store
 .env
 .vscode/
+run.sh
