@@ -4,9 +4,9 @@ build:
   commands:
     build:
       - ./sbt dist
-      - unzip target/universal/dr-cla-*-SNAPSHOT.zip app_runner
+      - unzip target/universal/dr-cla-0.1.0-SNAPSHOT.zip
 run: 
-  command: ./app_runner/bin/dr-cla -Dhttp.port=8000
+  command: cd dr-cla-0.1.0-SNAPSHOT && ./bin/dr-cla -Dhttp.port=8000
   network:
     port: 8000
   env:
