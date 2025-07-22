@@ -4,11 +4,11 @@ build:
   commands:
     build:
       - ./sbt stage
-      - yum -y install unzip
-      - ./sbt dist
-      - unzip -o target/universal/dr-cla-0.1.0-SNAPSHOT.zip -d output
+      # - yum -y install unzip
+      # - ./sbt dist
+      # - unzip -o target/universal/dr-cla-0.1.0-SNAPSHOT.zip -d output
 run: 
-  command: cd output/dr-cla-0.1.0-SNAPSHOT && ./bin/dr-cla -Dhttp.port=8000
+  command: ./sbt run -Dhttp.port=8000
   network:
     port: 8000
   env:
