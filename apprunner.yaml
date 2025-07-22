@@ -33,12 +33,12 @@ run:
       value: "true"
   secrets:
     - name: APPLICATION_SECRET
-      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+      value-from: "arn:aws:secretsmanager:us-east-1:767828747130:secret:prod/fuel-dr-cla-secrets-If1zeV:application_secret::"
     - name: GITHUB_CLIENT_SECRET
-      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+      value-from: "arn:aws:secretsmanager:us-east-1:767828747130:secret:prod/fuel-dr-cla-secrets-If1zeV:github_client_secret::"
     - name: GITHUB_INTEGRATION_CLIENT_SECRET
-      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+      value-from: "arn:aws:secretsmanager:us-east-1:767828747130:secret:prod/fuel-dr-cla-secrets-If1zeV:github_integration_client_secret::"
     - name: GITHUB_INTEGRATION_PRIVATE_KEY
-      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+      value-from: "arn:aws:secretsmanager:us-east-1:767828747130:secret:prod/fuel-dr-cla-secrets-If1zeV:github_integration_private_key::"
     - name: GITHUB_INTEGRATION_SECRET_TOKEN
-      value-from: "arn:aws:secretsmanager:us-east-1:123456789012:secret:testingstackAppRunnerConstr-kJFXde2ULKbT-S7t8xR:username::"
+      value-from: "arn:aws:secretsmanager:us-east-1:767828747130:secret:prod/fuel-dr-cla-secrets-If1zeV:github_integration_secret_token::"
