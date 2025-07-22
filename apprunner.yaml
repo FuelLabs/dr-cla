@@ -3,9 +3,10 @@ runtime: corretto8
 build:
   commands:
     build:
-      - ./sbt stage
+      - ./sbt dist
+      - unzip target/universal/dr-cla-*-SNAPSHOT.zip app_runner
 run: 
-  command: ./target/universal/stage/bin/dr-cla -Dhttp.port=8000
+  command: ./app_runner/bin/dr-cla -Dhttp.port=8000
   network:
     port: 8000
   env:
