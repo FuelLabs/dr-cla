@@ -3,6 +3,7 @@ runtime: corretto8
 build:
   commands:
     build:
+      - ./sbt stage
       - yum -y install unzip
       - ./sbt dist
       - unzip target/universal/dr-cla-0.1.0-SNAPSHOT.zip
