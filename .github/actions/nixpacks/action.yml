@@ -39,6 +39,8 @@ inputs:
   cache_tag:
     description: "Image to use for the cache image. Defaults to `ghcr.io/org/app:latest` where org/app is the repository the workflow runs into. (NOTE: Provide a lowercase name, even if the repo or tbe org contain uppercase characters)"
     required: false
+  image_name:
+    required: false
 
 runs:
   using: 'composite'
@@ -67,6 +69,7 @@ runs:
         INPUT_ENV: ${{ inputs.env }}
         INPUT_CACHE: ${{ inputs.cache }}
         INPUT_CACHE_TAG: ${{ inputs.cache_tag }}
+        INPUT_IMAGE_NAME: ${{ inputs.image_name }}
 
         # raw SHA of the commit which triggered the workflow
         GIT_SHA: ${{ github.sha }}
