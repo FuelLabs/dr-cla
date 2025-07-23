@@ -64,9 +64,8 @@ jobs:
         uses: ./.github/actions/nixpacks
         with:
           push: true
-          cache: true
+          cache: false
           platforms: "linux/amd64,linux/arm64"
-          cache_tag: ${{ env.IMAGE_NAME }}:cache
           tags: |
             ${{ steps.login-ecr-public.outputs.registry }}/${{ env.AWS_ECR_ORG }}/${{ github.event.repository.name }}:${{ env.DATE_STAMP }}
             ${{ steps.login-ecr-public.outputs.registry }}/${{ env.AWS_ECR_ORG }}/${{ github.event.repository.name }}:latest
